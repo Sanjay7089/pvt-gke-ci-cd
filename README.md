@@ -1,1 +1,1 @@
-# pvt-gke-ci-cd
+![Alt text](details.png "Directory Structure")

@@ -1,0 +1,9 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['alpha', 'builds', 'triggers', 'run', 'deployment', '--branch=master']
+    id: 'trigger next build'
+
+logsBucket: 'gs://loggs-cloudbuild-poc-project'
+options:
+  logging: GCS_ONLY
+timeout: 86400s

@@ -1,0 +1,30 @@
+#  The following commands are available :
+#  - all-resource                          : Make will create all the terraform resources.
+#  - specific-global-resource              : Make will create the specific global resources. eg. make specific-global-resource dir_name=vpc_subnets
+#  - specific-regional-resource            : Make will reate the specific regional resources. eg. make specific-regional-resource dir_name=gke
+#  - Folder directory structure            :
+                                            # .
+                                            # └── Terraform
+                                            #     └── env
+                                            #         ├── global
+                                            #         │   ├── tfstate-gcs
+                                            #         │   └── vpc_subnets
+                                            #         └── region
+                                            #             └── asia-south1
+                                            #                 └── gke
+
+steps:
+  - name: 'gcr.io/poc-project-443614/gcloud-terraform:latest' #create this docker image using the dockerfile
+    id: Create the terraform resources
+    entrypoint: 'bash'
+    args:
+      - '-eEuo'
+      - 'pipefail'
+      - '-c'
+      - |
+        make all-resource
+
+logsBucket: 'gs://loggs-cloudbuild-poc-project'
+options:
+  logging: GCS_ONLY
+timeout: 86400s
