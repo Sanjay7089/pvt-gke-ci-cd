@@ -2,10 +2,10 @@ buckets_obj = [
   {
     ## BUCKET WITH ALL THE INPUT ATTRIBUTES
     ## AS SPECIIFIED IN THE TERRAFORM GOOGLE MODULES DOCS
-    bucket_name   = "tfstate-bucket-gcp"
-    project       = "poc-project-443614"
-    location      = "us-central1"
-    prefix        = ""
+    bucket_name = "tfstate-bucket-gcp"
+    project     = "poc-project-443614"
+    location    = "us-central1"
+    prefix      = ""
     versioning = {
       tfstate-bucket-gcp = true
     }
@@ -14,7 +14,7 @@ buckets_obj = [
         "user:sanjayjatsanjay22@gmail.com"
       ]
     }
-    labels                = {
+    labels = {
       app   = "terraform-state",
       owner = "quantiphi"
     }

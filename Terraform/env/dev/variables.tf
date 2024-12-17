@@ -6,11 +6,11 @@ variable "cloud_router_object" {
     region       = string
     router_name  = string
     nats = list(object({
-      name                                = string
-      nat_ip_allocate_option              = optional(string)
-      source_subnetwork_ip_ranges_to_nat  = optional(string)
-      nat_ips                             = optional(list(string), [])
-    
+      name                               = string
+      nat_ip_allocate_option             = optional(string)
+      source_subnetwork_ip_ranges_to_nat = optional(string)
+      nat_ips                            = optional(list(string), [])
+
 
     }))
 
@@ -94,7 +94,7 @@ variable "gke_config" {
     enable_private_endpoint         = bool
     enable_private_nodes            = bool
     release_channel                 = string
-    secondary_ranges = list(string)
+    secondary_ranges                = list(string)
     master_authorized_networks = list(object({
       cidr_block   = string
       display_name = string
