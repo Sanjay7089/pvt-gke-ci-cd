@@ -1,4 +1,20 @@
 steps:
+  - name: 'gcr.io/PROJECT_ID/gcloud-terraform:latest'   #this is the same docker image we have used in terraform execution
+    id: VPN deployment
+    entrypoint: 'bash'
+    dir: vpn-privatepool
+    args: ['./vpn-script.sh']
+
+  - name: 'gcr.io/PROJECT_ID/gcloud-terraform:latest'  #this is the same docker image we have used in terraform execution
+    id: Workerpool deployment
+    entrypoint: 'bash'
+    dir: vpn-privatepool
+    args: ['./pool-script.sh']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['alpha', 'builds', 'triggers', 'run', 'deployment', '--branch=main']
+    id: 'trigger next build'
+
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['alpha', 'builds', 'triggers', 'run', 'deployment', '--branch=master']
     id: 'trigger next build'
