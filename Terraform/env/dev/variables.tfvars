@@ -106,23 +106,27 @@ cloud_router_object = {
   ]
 }
 gke_config = {
-  project_id                      = "poc-project-443614"
-  region                          = "us-central1"
-  name                            = "pvt-gke-cluster"
-  network                         = "gke-cluster-vpc"
-  subnetwork                      = "gke-cluster-subnet"
-  master_ipv4_cidr_block          = "10.3.0.0/28"
-  service_account                 = "devops-svc@poc-project-443614.iam.gserviceaccount.com"
-  create_service_account          = false
-  enable_vertical_pod_autoscaling = true
-  enable_private_endpoint         = true
-  enable_private_nodes            = true
-  release_channel                 = "REGULAR"
-  secondary_ranges                = ["pod", "svc"]
+  project_id              = "poc-project-443614"
+  region                  = "us-central1"
+  name                    = "pvt-gke-cluster"
+  network                 = "gke-cluster-vpc"
+  subnetwork              = "gke-cluster-subnet"
+  master_ipv4_cidr_block  = "10.3.0.0/28"
+  enable_autopilot        = true
+  pod_range               = "pod"
+  service_range           = "svc"
+  enable_private_endpoint = true
+  enable_private_nodes    = true
+  release_channel         = "REGULAR"
+
   master_authorized_networks = [
     {
       cidr_block   = "10.10.0.0/16"
       display_name = "vpc-cider-range"
     }
   ]
+  auto_provisioning_defaults = {
+    # Service Account
+    service_account = "devops-svc@poc-project-443614.iam.gserviceaccount.com"
+  }
 }
