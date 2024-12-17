@@ -6,12 +6,7 @@ resource "local_file" "default" {
   # more modularity, if you prefer, instead of storing the template inline as
   # we do here.
   content = <<-EOT
-  terraform {
-    backend "gcs" {
-      bucket = "tfstate-bucket-gcp"
-      prefix = "terraform/state-file" 
-    }
-  }
+ 
   EOT
 }
 
@@ -41,10 +36,10 @@ module "cloud-router" {
    GCS bucket 
  *****************************************/
 
-module "tf-state-bucket" {
-  source      = "../../modules/cloud-storage"
-  buckets_obj = var.buckets_obj
-}
+# module "tf-state-bucket" {
+#   source      = "../../modules/cloud-storage"
+#   buckets_obj = var.buckets_obj
+# }
 
 /******************************************
    GKE
