@@ -1,6 +1,7 @@
 all-resource:
 	cd Terraform/env/global/tfstate-gcs; \
-	terraform init && terraform fmt && terraform validate && terraform plan -var-file=variables.tfvars && terraform apply -var-file=variables.tfvars --auto-approve
+	terraform init && terraform fmt && terraform validate && terraform plan -var-file=variables.tfvars && terraform apply -var-file=variables.tfvars --auto-approve \
+    terraform import module.tfstate_bucket.google_storage_bucket.bucket <BUCKET_NAME> || echo "Bucket already imported."; \
 	cd Terraform/env/global/vpc_subnets; \
 	terraform init && terraform fmt && terraform validate && terraform plan -var-file=variables.tfvars && terraform apply -var-file=variables.tfvars --auto-approve
 	cd Terraform/env/region/asia-south1/gke; \
