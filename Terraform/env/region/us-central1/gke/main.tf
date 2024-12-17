@@ -61,7 +61,7 @@ data "google_project" "project" {
 module "gke_private_cluster" {
   source                                = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
   project_id                            = var.project_id
-  name                                  = "gke-cluster"
+  name                                  = "pvt-gke-cluster"
   region                                = var.region
   network                               = "gke-cluster-vpc"
   subnetwork                            = "gke-cluster-subnet"
@@ -86,10 +86,6 @@ module "gke_private_cluster" {
     }
   ]
 
-  cluster_resource_labels            = {
-    "owner" : "jenkins"
-  }
-  kubernetes_version                 = "1.22.11-gke.400"
   node_pools = [
     {
       name                           = "gke-cluster-nodepool"
@@ -102,7 +98,7 @@ module "gke_private_cluster" {
       enable_autoscaling             = true
       max_pods_per_node              = 110
       disk_type                      = "pd-standard"
-      gke_cluster_min_master_version = "1.22.8-gke.200"
+     
       auto_upgrade                   = false
       auto_repair                    = false
     }

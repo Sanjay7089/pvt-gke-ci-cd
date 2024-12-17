@@ -1,6 +1,6 @@
 FROM gcr.io/cloud-builders/gcloud
 
-ENV TERRAFORM_VERSION=1.2.9
+ENV TERRAFORM_VERSION=1.10.2 
 
 RUN apt-get update && apt-get install wget unzip
 
