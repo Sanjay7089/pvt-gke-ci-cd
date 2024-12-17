@@ -14,7 +14,8 @@ module "gke_private_cluster" {
   enable_private_endpoint         = var.gke_config.enable_private_endpoint
   enable_private_nodes            = var.gke_config.enable_private_nodes
   master_ipv4_cidr_block          = var.gke_config.master_ipv4_cidr_block
-#   deletion_protection             = var.gke_config.deletion_protection
-  master_authorized_networks      = var.gke_config.master_authorized_networks
-  service_account                 = var.gke_config.service_account
+  #   deletion_protection             = var.gke_config.deletion_protection
+  master_authorized_networks = var.gke_config.master_authorized_networks
+  create_service_account     = var.gke_config.create_service_account
+  service_account            = var.gke_config.service_account
 }

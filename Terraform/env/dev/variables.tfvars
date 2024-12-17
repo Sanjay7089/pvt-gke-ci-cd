@@ -113,6 +113,7 @@ gke_config = {
   subnetwork                      = "gke-cluster-subnet"
   master_ipv4_cidr_block          = "10.3.0.0/28"
   service_account                 = "devops-svc@poc-project-443614.iam.gserviceaccount.com"
+  create_service_account          = false
   enable_vertical_pod_autoscaling = true
   enable_private_endpoint         = true
   enable_private_nodes            = true

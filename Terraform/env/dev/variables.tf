@@ -88,6 +88,7 @@ variable "gke_config" {
     name                            = string
     network                         = string
     subnetwork                      = string
+    create_service_account = bool 
     master_ipv4_cidr_block          = string
     service_account                 = string
     enable_vertical_pod_autoscaling = bool
