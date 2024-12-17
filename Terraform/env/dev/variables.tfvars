@@ -97,7 +97,7 @@ cloud_router_object = {
   nats = [
     {
       name                               = "gke-cluster-vpc-nat",
-      nat_ips                            = ["ext-ip-nat"],
+      nat_ips                            = ["ext-ip-nat-gke-cluster-vpc-nat-router"],
       source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 
 
