@@ -40,20 +40,20 @@ provider "google" {}
   Module for TF State Bucket
  *****************************************/
 
-module "tfstate_bucket" {
-  source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "~> 1.3"
+# module "tfstate_bucket" {
+#   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
+#   version = "~> 1.3"
 
-  name          = "tfstate-bucket-gcp"
-  project_id    = var.project_id
-  location      = var.location
-  storage_class = "STANDARD"
-  versioning    = true
-  labels = {
-    "purpose"   = "terraform",
-    "createdby" = "terraform"
-  }
-}
+#   name          = "tfstate-bucket-gcp"
+#   project_id    = var.project_id
+#   location      = var.location
+#   storage_class = "STANDARD"
+#   versioning    = true
+#   labels = {
+#     "purpose"   = "terraform",
+#     "createdby" = "terraform"
+#   }
+# }
 
 # /******************************************
 #   Outputs of Bucket
