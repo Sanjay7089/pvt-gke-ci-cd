@@ -26,7 +26,7 @@
 resource "google_container_cluster" "pvt-gke-autopilot" {
   name     = var.gke_config.name
   location = var.gke_config.region
-
+  project = var.gke_config.project_id
   # Enable Autopilot
   enable_autopilot = var.gke_config.enable_autopilot
 
