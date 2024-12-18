@@ -1,76 +1,56 @@
-gcloud compute vpn-gateways create gke-cluster-vpn-gateway \
-   --network=gke-cluster-vpc	 \
-   --region=us-central1 \
-   --stack-type=IPV4_ONLY
+#!/bin/bash
 
+set -e  # Exit immediately if a command exits with a non-zero status
 
-gcloud compute vpn-gateways create private-pool-vpn-gateway \
-   --network=private-pool-vpc \
-   --region=us-central1 \
-   --stack-type=IPV4_ONLY
+# Check if the worker pool range already exists
+if ! gcloud compute addresses describe worker-pool-range --global &> /dev/null; then
+  echo "Creating worker-pool-range..."
+  gcloud compute addresses create worker-pool-range \
+      --global \
+      --purpose=VPC_PEERING \
+      --addresses=192.168.0.0 \
+      --prefix-length=24 \
+      --network=private-pool-vpc
+else
+  echo "Worker pool range already exists."
+fi
 
+# Check if VPC peering connection exists
+if ! gcloud services vpc-peerings describe --service=servicenetworking.googleapis.com --ranges=worker-pool-range --network=private-pool-vpc &> /dev/null; then
+  echo "Connecting VPC peering..."
+  gcloud services vpc-peerings connect \
+      --service=servicenetworking.googleapis.com \
+      --ranges=worker-pool-range \
+      --network=private-pool-vpc
+else
+  echo "VPC peering connection already exists."
+fi
 
-gcloud compute routers create vpn-gke-cluster-vpc \
-   --region=us-central1 \
-   --network=gke-cluster-vpc	 \
-   --asn=64518
+# Update VPC peering settings
+gcloud compute networks peerings update servicenetworking-googleapis-com \
+    --network=private-pool-vpc \
+    --export-custom-routes \
+    --no-export-subnet-routes-with-public-ip
 
+# Create the private build worker pool if it doesn't exist
+if ! gcloud builds worker-pools describe private-pool --region=us-central1 &> /dev/null; then
+  echo "Creating private build worker pool..."
+  gcloud builds worker-pools create private-pool \
+      --region=us-central1 \
+      --peered-network=projects/PROJECT_ID/global/networks/private-pool-vpc
+else
+  echo "Private build worker pool already exists."
+fi
 
-gcloud compute routers create vpn-private-pool-vpc \
-   --region=us-central1 \
-   --network=private-pool-vpc \
-   --asn=64522
+# Get GKE peering name and update BGP peers accordingly
+export GKE_PEERING_NAME=$(gcloud container clusters describe gke-cluster --zone us-central1-b --format='value(privateClusterConfig.peeringName)')
 
+gcloud compute networks peerings update $GKE_PEERING_NAME --network=gke-cluster-vpc --export-custom-routes --no-export-subnet-routes-with-public-ip
 
-gcloud compute vpn-tunnels create gke-cluster-vpc-0 \
-    --peer-gcp-gateway=private-pool-vpn-gateway \
-    --region=us-central1 \
-    --ike-version=2 \
-    --shared-secret=e959060652d0eee39c40312c7916d076 \
-    --router=vpn-gke-cluster-vpc \
-    --vpn-gateway=gke-cluster-vpn-gateway \
-    --interface=0
+IP=$(gcloud compute addresses describe worker-pool-range --global | grep address: | awk '{print $2}')
 
+gcloud compute routers update-bgp-peer vpn-private-pool-vpc --peer-name=private-pool-vpn-gateway --region=us-central1 --advertisement-mode=CUSTOM --set-advertisement-ranges=$IP/24
 
-gcloud compute vpn-tunnels create private-pool-vpc-0 \
-    --peer-gcp-gateway=gke-cluster-vpn-gateway \
-    --region=us-central1 \
-    --ike-version=2 \
-    --shared-secret=e959060652d0eee39c40312c7916d076 \
-    --router=vpn-private-pool-vpc \
-    --vpn-gateway=private-pool-vpn-gateway \
-    --interface=0
+gcloud compute routers update-bgp-peer vpn-gke-cluster-vpc --peer-name=gke-cluster-vpn-gateway --region=us-central1 --advertisement-mode=CUSTOM --set-advertisement-ranges=10.4.0.0/28
 
-
-gcloud compute routers add-interface vpn-gke-cluster-vpc \
-    --interface-name=gke-cluster-vpc-0 \
-    --ip-address=169.254.0.1 \
-    --mask-length=16 \
-    --vpn-tunnel=gke-cluster-vpc-0 \
-    --region=us-central1
-
-
-gcloud compute routers add-bgp-peer vpn-gke-cluster-vpc \
-    --peer-name=gke-cluster-vpn-gateway \
-    --interface=gke-cluster-vpc-0 \
-    --peer-ip-address=169.254.0.2 \
-    --peer-asn=64522 \
-    --region=us-central1
-
-
-gcloud compute routers add-interface vpn-private-pool-vpc \
-    --interface-name=private-pool-vpc-0 \
-    --ip-address=169.254.0.2 \
-    --mask-length=16 \
-    --vpn-tunnel=private-pool-vpc-0 \
-    --region=us-central1
-
-
-gcloud compute routers add-bgp-peer vpn-private-pool-vpc \
-    --peer-name=private-pool-vpn-gateway \
-    --interface=private-pool-vpc-0 \
-    --peer-ip-address=169.254.0.1 \
-    --peer-asn=64518 \
-    --region=us-central1
-
-
+gcloud container clusters update gke-cluster --enable-master-authorized-networks --zone us-central1-b --master-authorized-networks=$IP/24
