@@ -37,7 +37,7 @@ if ! gcloud builds worker-pools describe private-pool --region=us-central1 &> /d
   echo "Creating private build worker pool..."
   gcloud builds worker-pools create private-pool \
       --region=us-central1 \
-      --peered-network=projects/PROJECT_ID/global/networks/private-pool-vpc
+      --peered-network=projects/poc-project-443614/global/networks/private-pool-vpc
 else
   echo "Private build worker pool already exists."
 fi
