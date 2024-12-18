@@ -43,7 +43,7 @@ else
 fi
 
 # Get GKE peering name and update BGP peers accordingly
-export GKE_PEERING_NAME=$(gcloud container clusters describe gke-cluster --zone us-central1-b --format='value(privateClusterConfig.peeringName)')
+export GKE_PEERING_NAME=$(gcloud container clusters describe pvt-gke-cluster --zone us-central1-b --format='value(privateClusterConfig.peeringName)')
 
 gcloud compute networks peerings update $GKE_PEERING_NAME --network=gke-cluster-vpc --export-custom-routes --no-export-subnet-routes-with-public-ip
 
@@ -53,4 +53,4 @@ gcloud compute routers update-bgp-peer vpn-private-pool-vpc --peer-name=private-
 
 gcloud compute routers update-bgp-peer vpn-gke-cluster-vpc --peer-name=gke-cluster-vpn-gateway --region=us-central1 --advertisement-mode=CUSTOM --set-advertisement-ranges=10.4.0.0/28
 
-gcloud container clusters update gke-cluster --enable-master-authorized-networks --zone us-central1-b --master-authorized-networks=$IP/24
+gcloud container clusters update pvt-gke-cluster --enable-master-authorized-networks --zone us-central1-b --master-authorized-networks=$IP/24
